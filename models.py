@@ -40,7 +40,7 @@ class User(db.Model):
     profile_image_url = db.Column(db.Text,
                                 nullable=False,
                                 default='https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg')
-    created_at = db.Column(db.Datetime,
+    created_at = db.Column(db.DateTime,
                             default=datetime.utcnow,
                             nullable=False)
     
@@ -87,6 +87,8 @@ class User_Race(db.Model):
     is_complete = db.Column(db.Boolean,
                         nullable=False,
                         default=False)
+    trainings = db.relationship('Training',
+                            backref='race')
 
     
 class Training(db.Model):
@@ -108,7 +110,7 @@ class Training(db.Model):
     type = db.Column(db.String(20),
                     nullable=False)
     distance = db.Column(db.Float)
-    units = db.Column(db.string(6))
+    units = db.Column(db.String(6))
     created_at = db.Column(db.DateTime,
                         nullable=False,
                         default=datetime.utcnow())

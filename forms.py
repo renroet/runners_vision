@@ -6,7 +6,7 @@ from wtforms.validators import InputRequired, DataRequired, Email, Length, Optio
 WORKOUTS = ['run', 'bicycle', 'swim', 'walk', 'weight train', 'cross train']
 UNITS = ['miles', 'km', 'meters']
 
-class UserForm(FlaskForm):
+class UserAddForm(FlaskForm):
     """Form for adding users."""
 
     username = StringField('Username:', validators=[DataRequired()])
@@ -39,4 +39,5 @@ class TrainingForm(FlaskForm):
     distance = FloatField('Distance:', validators=[Optional()])
     units = SelectField('Units:', choices=UNITS, default='run')
 
-
+class LoginForm(FlaskForm):
+    """Form for logging in a known user"""
