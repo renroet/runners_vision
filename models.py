@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import backref
 
@@ -46,7 +48,14 @@ class User(db.Model):
     
     races = db.relationship('Race',
                             secondary="users_races",
-                            backref= "trainees")
+                            cascade='all, delete, delete-orphan',
+                            backref="trainees")
+
+    @classmethod
+    def signup(cls, username, email, password, first_name, last_name):
+        """creates instance of user and password"""
+        hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
+
 # 
 # 
 
@@ -88,6 +97,7 @@ class User_Race(db.Model):
                         nullable=False,
                         default=False)
     trainings = db.relationship('Training',
+                            cascade='all, delete, delete-orphan',
                             backref='race')
 
     
