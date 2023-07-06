@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% for i in races %}
+        <h3>{{ i['race'][name] }} </h3>
+            <ul>
+                <li>{{ i['race'][date] }}</li>
+                <li>{{ i['race'][address] }}</li>
+                <li>{{ i['race'][description] }}</li>
+                <!-- need to slice on <> and make new paragraphs there -->
+                <li><a href="{{ i['race'][link] }}">{{ i['race'][link] }}</a></li>
+            </ul>
+    {% endfor %}
+
+{% endblock %}

@@ -71,6 +71,7 @@
 from flask import Flask, render_template, request, jsonify, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
+import requests 
 
 from forms import UserAddForm, UserEditForm, TrainingForm, LoginForm
 from models import db, connect_db, User, Training, Race, User_Race
@@ -96,8 +97,22 @@ def homepage():
     """display homepage with login/signup options"""
     return render_template('base.html')
 
+@app.route('/races')
+def show_all_races():
+    """Calls api and shows the 50 races coming up next by default"""
+    resp = requests.get('https://runsignup.com/rest/races', params={'format': 'json'})
+    data = resp.json()
+    races = data['races']
+    
+    race = 'race'
+    name = 'name'
+    date = 'next_date'
+    address = 'address'
+    link = 'url'
+    description = 'description'
+ 
 
-
+    return render_template('show.html', data=data, races=races, race=race, name=name, date=date, address=address, link=link, description=description)
 
 
 

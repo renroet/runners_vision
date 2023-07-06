@@ -4,6 +4,7 @@ from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import backref
 
+bcrypt = Bcrypt()
 db = SQLAlchemy()
 
 def connect_db(app):
@@ -56,6 +57,30 @@ class User(db.Model):
         """creates instance of user and password"""
         hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
 
+        user = User(
+                username=username,
+                email=email,
+                password=hashed_pwd,
+                first_name=first_name,
+                last_name=last_name
+            )
+
+        db.session.add(user)
+
+        return user
+
+    @classmethod
+    def authenticate(cls, username, password):
+        """compares username and password provided with users in db"""
+
+        user = cls.query.filter_by(username=username).first()
+
+        if user:
+            is_auth = bcrypt.check_password_hash(user.password, password)
+            if is_auth:
+                return user
+
+        return False
 # 
 # 
 
