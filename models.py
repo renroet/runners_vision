@@ -48,6 +48,7 @@ class User(db.Model):
                             nullable=False)
     
     races = db.relationship('Race',
+                            single_parent=True,
                             secondary="users_races",
                             cascade='all, delete, delete-orphan',
                             backref="trainees")

@@ -2,16 +2,16 @@
 
 {% block content %}
 
-<h1>Login</h1>
+<h1>Search Races</h1>
 
 <div class="row col-md-4 center-block">
-    <form class="form" id="login-form" method="POST">
+    <form class="form" id="search-races-form" method="POST">
       {{ form.hidden_tag() }} 
     
       {% for field in form 
               if field.widget.input_type != 'hidden' %}
     
-        <p class="form-control">
+        <p>
           {{ field.label }}
           {{ field }}
     
@@ -27,8 +27,5 @@
       <button type="submit">Submit</button>
     </form>
 </div>
-
-
-
 
 {% endblock %}

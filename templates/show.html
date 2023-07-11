@@ -1,16 +1,25 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<nav>
+    <a href="/races/search" class="button"> Search for Races
+    </a>
+</nav>
 
+<ol>
     {% for i in races %}
+    
+    <li>   
         <h3>{{ i['race'][name] }} </h3>
+        <a href="/user/races/add/{{ i['race'][name] }}"><button>Add</button></a>
             <ul>
                 <li>{{ i['race'][date] }}</li>
                 <li>{{ i['race'][address] }}</li>
-                <li>{{ i['race'][description] }}</li>
                 <!-- need to slice on <> and make new paragraphs there -->
                 <li><a href="{{ i['race'][link] }}">{{ i['race'][link] }}</a></li>
             </ul>
+        
+    </li>
     {% endfor %}
-
+</ol>
 {% endblock %}

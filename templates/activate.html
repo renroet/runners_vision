@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>{{ name }}</h1>
+<h3>Would you like this to be your active race? <a href="/races/{{ users_races_id }}/activate"><button class="success">Activate</button></a></h3>
+<p class="danger">Warning: only one race can be active at a time. If new race is activated, all training restarts for the activated race.</p>
+{% endblock %}
