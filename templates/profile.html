@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>{{user.first_name}} {{user.last_name}}</h1>
+<h2>Training for: {{race}}</h2>
+<p>See all races on vision board: <a href="/user/{{ user.id }}/races">Races</a></p>
+<ul>
+    {% for t in trainings %}
+        <li>training</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

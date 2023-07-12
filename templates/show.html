@@ -11,7 +11,10 @@
     
     <li>   
         <h3>{{ i['race'][name] }} </h3>
-        <a href="/user/races/add/{{ i['race'][name] }}"><button>Add</button></a>
+        <form action="/user/{{ user_id }}/races/add" method="POST">
+            <input type="hidden" name="name" id="name" value="{{ i['race'][name] }}">
+            <button type="submit">Add</button>
+        </form>
             <ul>
                 <li>{{ i['race'][date] }}</li>
                 <li>{{ i['race'][address] }}</li>

@@ -3,6 +3,11 @@
 {% block content %}
 
 <h1>{{ name }}</h1>
-<h3>Would you like this to be your active race? <a href="/races/{{ users_races_id }}/activate"><button class="success">Activate</button></a></h3>
+<h3>Would you like this to be your active race?</h3>
+<form action="/races/{{ user_id }}/{{ race_id }}/activate" method="POST">
+    <input type="hidden" name="users_races_id" id="users_races_id" value="{{ id }}">
+    <button type="submit">Activate</button>
+</form>
+<a href="/races"><button>Leave Inactive</button></a>
 <p class="danger">Warning: only one race can be active at a time. If new race is activated, all training restarts for the activated race.</p>
 {% endblock %}

@@ -100,7 +100,7 @@ def add_user_to_g():
     """If we're logged in, add curr user to Flask global."""
 
     if CURR_USER_KEY in session:
-        g.user = db.session.execute(db.select(User).filter_by(id=(session[CURR_USER_KEY]))).scalar_one()
+        g.user = db.session.execute(db.select(User).filter_by(id=(session[CURR_USER_KEY]))).scalar()
 
     else:
         g.user = None
@@ -229,6 +229,9 @@ def homepage():
 @app.route('/races')
 def show_all_races():
     """Calls api and shows the 50 races coming up next by default"""
+    
+    user_id = g.user.id if g.user else 0
+
     resp = requests.get('https://runsignup.com/rest/races', params={'format': 'json'})
     data = resp.json()
     races = data['races']
@@ -240,12 +243,13 @@ def show_all_races():
     link = 'url'
     description = 'description'
  
-
-    return render_template('show.html', data=data, races=races, race=race, name=name, date=date, address=address, link=link, description=description, html=html)
+   
+    return render_template('show.html', data=data, races=races, race=race, name=name, date=date, address=address, link=link, description=description, html=html, user_id=user_id)
 
 @app.route('/races/search', methods = ['GET', 'POST'])
 def search_races():
     """Renders form and calls api with form info"""
+
     form = SearchRacesForm()
     search = {'format': 'json'}
     if form.validate_on_submit():
@@ -283,28 +287,42 @@ def search_races():
         link = 'url'
         description = 'description'
 
-        return render_template('show.html', data=data, races=races, race=race, name=name,  date=date, address=address, link=link, description=description, html=html)
+        user_id = g.user.id if g.user else 0
+
+        return render_template('show.html', data=data, races=races, race=race, name=name,  date=date, address=address, link=link, description=description, html=html, user_id=user_id)
 
        
     return render_template('search.html', form=form)
 
-@app.route('/user/races/add/<int:race_name>', methods=['GET', 'POST'])
-def add_race(race_name):
+@app.route('/user/<int:user_id>/races/add', methods=['GET', 'POST'])
+def add_race(user_id):
     """add race to user in db""" 
-    if not g.user:
+    if not g.user or user_id == 0:
         flash("Must be logged in", "danger")
         return redirect("/")
 
-    resp = requests.get('https://runsignup.com/rest/races', params={'format': 'json', 'name': race_name})
+
+    name = request.form["name"]
+
+    for r in g.user.races:
+        if r.name == name:
+            return redirect('/races')
+
+    resp = requests.get('https://runsignup.com/rest/races', params={'format': 'json', 'name': name})
+
+#     for i in data['races']:
+# ...   if i['race']['race_id'] == 146508:
+# ...     print(i)
 
     data = resp.json()
-    races = data['races']
+    race = data['races'][0]['race']
 
-    name = races['name']
-    info = races['address']
-    start_date = races['next_date']
+    name = race['name']
+    city = race['address']['city']
+    state = race['address']['state']
+    start_date = race['next_date']
 
-    race = Race(name=name, info=info, start_date=start_date)
+    race = Race(name=name, city=city, state=state, start_date=start_date)
 
     db.session.add(race)
     db.session.commit()
@@ -314,9 +332,10 @@ def add_race(race_name):
     db.session.add(g.user)
     db.session.commit()
 
-    u_race = db.session.execute(db.select(User_Race).filter_by(race_id=race.id)).scalar_one()
+    # u_race = db.session.execute(db.select(User_Race).filter_by(race_id=race.id)).scalar_one()
 
-    return render_template('activate.html', name = name, id=u_race.id)
+
+    return render_template('activate.html', name = name, user_id=user_id, race_id=race.id)
 
     # name = db.Column(db.String(80),
     #                 nullable=False)
@@ -347,15 +366,62 @@ def add_race(race_name):
 
 #     return render_template('/users/edit.html', form=form)
 
-@app.route('/races/<int:users_races_id>/activate', methods=['POST'])
-def set_active_status(user_race_id):
+@app.route('/races/<int:user_id>/<int:race_id>/activate', methods=['POST'])
+def set_active_status(user_id, race_id):
     """sets the newly added race as either active or inactive"""
+    
+    races = g.user.races
+
+    for r in races:
+        r = db.session.execute(db.select(User_Race).filter_by(race_id=r.id, user_id = g.user.id)).scalar_one()
+
+        r.deactivate()
+
+    u_race = db.session.execute(db.select(User_Race).filter_by(race_id=race_id, user_id=user_id)).scalar_one()
+    # race = db.session.execute(db.select(Race).filter_by(id=u_race.race_id)).scalar_one()
+    u_race.is_active = True 
+
+    db.session.commit()
+    
+    return redirect(f'/user/{user_id}')
+
+@app.route('/user/<int:user_id>')
+def user_profile(user_id):
+    """Display user profile. Have active race heading a field and race countdown"""
+    """Have a spot for completed races. Possibly with medals to indicate completion."""
+    """Flashes occur at important times to inform user about upcoming moments and training"""
+    """Spot for weekly sum of miles run may also be good"""
+
+    if not g.user.id == user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    user = g.user
+    race = ''
+    u_r = db.session.execute(db.select(User_Race).filter_by(is_active=True, user_id = g.user.id)).scalar()
+    if u_r:
+        r = db.session.execute(db.select(Race).filter_by(id = u_r.race_id)).scalar()
+        race = r.name
+
+    trainings = []
+    if u_r:
+        trainings = u_r.trainings
+
+    return render_template('profile.html', user=user, race=race, trainings=trainings)
+    
+
+@app.route('/user/<int:user_id>/races')
+def show_user_races(user_id):
+    if not g.user.id == user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    user = g.user
+    races = g.user.races
+    return render_template('user_races.html', user=user, races=races)
 
 
 
-
-
-
-
-
-
+@app.route('/race/<int:users_races_id>/trainings', methods=['GET', 'POST'])
+def add_training(users_races_id):
+    

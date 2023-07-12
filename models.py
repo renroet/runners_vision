@@ -53,6 +53,7 @@ class User(db.Model):
                             cascade='all, delete, delete-orphan',
                             backref="trainees")
 
+
     @classmethod
     def signup(cls, username, email, password, first_name, last_name):
         """creates instance of user and password"""
@@ -95,6 +96,8 @@ class Race(db.Model):
                     autoincrement=True)
     name = db.Column(db.String(80),
                     nullable=False)
+    city = db.Column(db.String)
+    state = db.Column(db.String)
     info = db.Column(db.Text)
     image_url = db.Column(db.Text,
                                 nullable=False,
@@ -111,10 +114,10 @@ class User_Race(db.Model):
                     primary_key=True,
                     autoincrement=True)
     race_id = db.Column(db.Integer,
-                        db.ForeignKey('races.id'),
+                        db.ForeignKey('races.id', ondelete="cascade"),
                         nullable=False)
     user_id = db.Column(db.Integer,
-                        db.ForeignKey('users.id'),
+                        db.ForeignKey('users.id', ondelete="cascade"),
                         nullable=False)
     is_active = db.Column(db.Boolean,
                         nullable=False,
@@ -125,6 +128,14 @@ class User_Race(db.Model):
     trainings = db.relationship('Training',
                             cascade='all, delete, delete-orphan',
                             backref='race')
+
+    def deactivate(cls):
+            """"deactivate races in users races upon the activation of a new one"""
+
+            cls.is_active = False
+
+            db.session.commit()
+            return 
 
     
 class Training(db.Model):

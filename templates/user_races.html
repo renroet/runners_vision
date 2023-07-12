@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>{{user.first_name}} {{user.last_name}}</h1>
+<h2>Vision Board</h2>
+<p>Go Back: <a href="/user/{{ user.id }}">Profile</a></p>
+<ul>
+    {% for r in races %}
+        <li>{{ r.name }} <form action="/races/{{ user.id }}/{{ r.id }}/activate" method="POST">
+            <input type="hidden" name="users_races_id" id="users_races_id" value="{{ id }}">
+            <button type="submit">Activate</button>
+            </form>
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
