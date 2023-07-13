@@ -184,6 +184,19 @@ def logout():
     flash('Logged out', 'success')
     return redirect('/login')
 
+@app.route('/user/<int:user_id>/delete>', methods=['POST'])
+def delete_user(user_id):
+    """Deletes user and all subsequent users_races and trainings from db"""
+    if not g.user.id == user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    
+    do_logout()
+
+    db.session.delete(g.user)
+    db.session.commit()
+
+    return redirect('/signup')
 
 @app.route('/user/<int:user_id>/edit', methods=['GET', 'POST'])
 def edit_user(user_id):
@@ -303,10 +316,18 @@ def add_race(user_id):
 
 
     name = request.form["name"]
-
+    db_race = db.session.execute(db.select(Race).filter_by(name=name)).scalar()
     for r in g.user.races:
         if r.name == name:
             return redirect('/races')
+    
+    if db_race:
+        g.user.races.append(db_race)
+
+        db.session.add(g.user)
+        db.session.commit()
+
+        return render_template('activate.html', name = name, user_id=user_id, race_id=db_race.id)
 
     resp = requests.get('https://runsignup.com/rest/races', params={'format': 'json', 'name': name})
 
@@ -433,7 +454,7 @@ def user_profile(user_id):
                     d = t.distance/1.609
                 total_walk_m = total_walk_m + d
 
-    return render_template('profile.html', user=user, race=race, trainings=trainings, u_r=u_r, total_r=round(total_run_m), total_b=round(total_bike_m), total_w=round(total_walk_m))
+    return render_template('profile.html', user=user, race=race, trainings=trainings, u_r=u_r, total_r=round(total_run_m,1), total_b=round(total_bike_m,1), total_w=round(total_walk_m,1))
     
 
 @app.route('/user/<int:user_id>/races')
@@ -473,3 +494,19 @@ def add_training(users_races_id):
         return redirect(f'/user/{g.user.id}')
 
     return render_template('add_training.html', form=form)
+
+
+@app.route('/races/<int:user_id>/<race_id>/delete', methods=['POST'])
+def remove_users_race(user_id, race_id):
+    """Deletes race from users_races table and user profile along with linked trainings"""
+    # maybe make this an inhouse api call instead so their will not have to be any rerouting
+    if not g.user.id == user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    u_race = db.session.execute(db.select(User_Race).filter_by(race_id=race_id, user_id=user_id)).scalar_one()
+
+    db.session.delete(u_race)
+    db.session.commit()
+
+    return redirect(f'/user/{user_id}/races')

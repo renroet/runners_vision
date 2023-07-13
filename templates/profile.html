@@ -4,15 +4,23 @@
 
 <h1>{{user.first_name}} {{user.last_name}}</h1>
 <h2>Training for: {{race}}</h2>
-<p>See all races on vision board: <a href="/user/{{ user.id }}/races">Races</a></p>
+<p class="small flex"> <form action="/user/{{ user.id }}/delete" method="POST" class="button primary small"><input type="hidden" name="user_id" id="user_id_delete" value="{{ user.id }}">
+    <button type="submit" class="small inline">Delete</button>
+    </form> 
+    <form action="/user/{{user.id}}/edit" method="POST" class="button edit small"><input type="hidden" name="user_id" id="user_id_edit" value="{{ user.id }}">
+        <button type="submit" class="small inline">Edit</button>
+        </form>
+</p>
+
+<p><b>See all races on vision board: </b><a href="/user/{{ user.id }}/races">Races</a></p>
 
 
 <a href="/race/{{ u_r.id }}/trainings" class="button primary">Add Training</a>
-
+{% if race %}
 <h3>Total Distances:</h4>
 <h4>Run:{{ total_r }} miles   Bike:{{ total_b }} miles   Walk:{{ total_w }} miles </h4>
 
-
+{% endif %}
 
 
 <ul>
