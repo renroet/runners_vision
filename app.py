@@ -224,7 +224,7 @@ def edit_user(user_id):
 @app.route('/')
 def homepage():
     """display homepage with login/signup options"""
-    return render_template('base.html')
+    return redirect('/races')
 
 @app.route('/races')
 def show_all_races():
@@ -404,10 +404,36 @@ def user_profile(user_id):
         race = r.name
 
     trainings = []
+    total_run_m = 0
+    total_bike_m = 0
+    total_walk_m = 0
     if u_r:
         trainings = u_r.trainings
+        for t in trainings:
+            v = t.type
+            if v == 'run' and t.distance:
+                d = float(t.distance)
+                if t.units == 'meters':
+                    d = t.distance / 1609
+                if t.units == 'km':
+                    d = t.distance/1.609
+                total_run_m = total_run_m + d
+            if v == 'bicycle' and t.distance:
+                d = float(t.distance)
+                if t.units == 'meters':
+                    d = t.distance / 1609
+                if t.units == 'km':
+                    d = t.distance/1.609
+                total_bike_m = total_bike_m + d
+            if v == 'walk' and t.distance:
+                d = float(t.distance)
+                if t.units == 'meters':
+                    d = t.distance / 1609
+                if t.units == 'km':
+                    d = t.distance/1.609
+                total_walk_m = total_walk_m + d
 
-    return render_template('profile.html', user=user, race=race, trainings=trainings)
+    return render_template('profile.html', user=user, race=race, trainings=trainings, u_r=u_r, total_r=round(total_run_m), total_b=round(total_bike_m), total_w=round(total_walk_m))
     
 
 @app.route('/user/<int:user_id>/races')
@@ -424,4 +450,26 @@ def show_user_races(user_id):
 
 @app.route('/race/<int:users_races_id>/trainings', methods=['GET', 'POST'])
 def add_training(users_races_id):
+    """Render TrainingForm. Add training to users_races table in db."""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
     
+    form = TrainingForm()
+
+    if form.validate_on_submit():
+        title = form.title.data
+        body = form.body.data
+        time_spent = form.time_spent.data
+        type = form.type.data
+        distance = form.distance.data
+        units = form.units.data
+    
+        t = Training(users_races_id=users_races_id, title=title, body=body, time_spent=time_spent, type=type, distance=distance, units=units)
+
+        db.session.add(t)
+        db.session.commit()
+
+        return redirect(f'/user/{g.user.id}')
+
+    return render_template('add_training.html', form=form)

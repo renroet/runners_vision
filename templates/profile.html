@@ -5,10 +5,26 @@
 <h1>{{user.first_name}} {{user.last_name}}</h1>
 <h2>Training for: {{race}}</h2>
 <p>See all races on vision board: <a href="/user/{{ user.id }}/races">Races</a></p>
+
+
+<a href="/race/{{ u_r.id }}/trainings" class="button primary">Add Training</a>
+
+<h3>Total Distances:</h4>
+<h4>Run:{{ total_r }} miles   Bike:{{ total_b }} miles   Walk:{{ total_w }} miles </h4>
+
+
+
+
 <ul>
     {% for t in trainings %}
-        <li>training</li>
+        <li>{{t.created_at.date()}} - {{ t.title }}</li>
+            {% if t.distance %} 
+                    <ul>
+                        <li>
+                     {{t.distance}} {{ t.units }} 
+                    </li>
+                </ul>
+                     {% endif %}  
     {% endfor %}
 </ul>
-
 {% endblock %}
