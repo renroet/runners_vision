@@ -184,10 +184,10 @@ def logout():
     flash('Logged out', 'success')
     return redirect('/login')
 
-@app.route('/user/<int:user_id>/delete>', methods=['POST'])
-def delete_user(user_id):
+@app.route('/user/delete', methods=['POST'])
+def delete_user():
     """Deletes user and all subsequent users_races and trainings from db"""
-    if not g.user.id == user_id:
+    if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
     
@@ -198,12 +198,12 @@ def delete_user(user_id):
 
     return redirect('/signup')
 
-@app.route('/user/<int:user_id>/edit', methods=['GET', 'POST'])
-def edit_user(user_id):
+@app.route('/user/edit', methods=['GET', 'POST'])
+def edit_user():
     """Render edit user form and update user"""
     if not g.user:
         flash("Access unauthorized.", "danger")
-        return redirect("/")
+        return redirect(f"/user/{g.user.id}")
 
     form = UserEditForm(obj=g.user)
 
@@ -213,7 +213,6 @@ def edit_user(user_id):
         if user:
         
             g.user.username=form.username.data,
-            g.user.password=form.password.data,
             g.user.email=form.email.data,
             g.user.header_image_url=form.header_image_url.data or User.header_image_url.defaularg,
             g.user.profile_image_url=form.profile_image_url.data or User.profile_image_url. defaularg,
@@ -262,10 +261,35 @@ def show_all_races():
 @app.route('/races/search', methods = ['GET', 'POST'])
 def search_races():
     """Renders form and calls api with form info"""
-
+    
     form = SearchRacesForm()
     search = {'format': 'json'}
+    u_r = []
+    races = []
+    race = 'race'
+    
+    date = 'next_date'
+    address = 'address'
+    link = 'url'
+    
+    description = 'description'
+    user_id = g.user.id if g.user else 0
     if form.validate_on_submit():
+        un = form.username.data
+        if un:
+            db_u = db.session.execute(db.select(User).filter(User.username.like(f'%{un}%'))).all()
+            if db_u:
+                for u in db_u:
+                    for r in u[0].races:
+                        if u[0].is_public:
+                            ra = {'race': { 
+                                    'name': r.name,
+                                    'address': f'{r.city}, {r.state}',
+                                    'next_date': r.start_date,
+                                    'url': f'/user/{u[0].id}',
+                                    'url_name': u[0].username}}
+                            u_r.append(ra)
+
         name = form.name.data
         if name:
             search.update({'name': name})
@@ -285,24 +309,31 @@ def search_races():
         if distance_units:
             search.update({'distance_units': distance_units})
      
-        resp = requests.get('https://runsignup.com/rest/races', params=search)
+        if len(search) == 2 and not u_r:
+            resp = requests.get('https://runsignup.com/rest/races', params=search)
     
-        data = resp.json()
-        races = data['races']
+            data = resp.json()
+            races = data['races']
+        
+        elif len(search) == 2 and u_r: 
+            for r in u_r:
+                races.append(r)
+        elif len(search) > 2:
+            resp = requests.get('https://runsignup.com/rest/races', params=search)
+    
+            data = resp.json()
+            races = data['races']
+            for r in u_r:
+                races.append(r)
+        
         if not races:
             flash('There are no races matching the criteria', 'error')
             return render_template('search.html', form=form)
-        html = ['<', '>', '</', 'span>', 'b>', 'p>', 'a>', 'href', 'ul>']
-        race = 'race'
-        name = 'name'
-        date = 'next_date'
-        address = 'address'
-        link = 'url'
-        description = 'description'
 
-        user_id = g.user.id if g.user else 0
-
-        return render_template('show.html', data=data, races=races, race=race, name=name,  date=date, address=address, link=link, description=description, html=html, user_id=user_id)
+        # html = ['<', '>', '</', 'span>', 'b>', 'p>', 'a>', 'href', 'ul>']
+        
+        
+        return render_template('show.html', races=races, race=race,  date=date, address=address, link=link, description=description, user_id=user_id)
 
        
     return render_template('search.html', form=form)
@@ -390,6 +421,9 @@ def add_race(user_id):
 @app.route('/races/<int:user_id>/<int:race_id>/activate', methods=['POST'])
 def set_active_status(user_id, race_id):
     """sets the newly added race as either active or inactive"""
+    if not g.user.id == user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
     
     races = g.user.races
 
@@ -413,13 +447,13 @@ def user_profile(user_id):
     """Flashes occur at important times to inform user about upcoming moments and training"""
     """Spot for weekly sum of miles run may also be good"""
 
-    if not g.user.id == user_id:
+    if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    user = g.user
+    user = db.session.execute(db.select(User).filter_by(id = user_id)).scalar_one()
     race = ''
-    u_r = db.session.execute(db.select(User_Race).filter_by(is_active=True, user_id = g.user.id)).scalar()
+    u_r = db.session.execute(db.select(User_Race).filter_by(is_active=True, user_id = user.id)).scalar()
     if u_r:
         r = db.session.execute(db.select(Race).filter_by(id = u_r.race_id)).scalar()
         race = r.name
@@ -459,12 +493,12 @@ def user_profile(user_id):
 
 @app.route('/user/<int:user_id>/races')
 def show_user_races(user_id):
-    if not g.user.id == user_id:
+    if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    user = g.user
-    races = g.user.races
+    user = db.session.execute(db.select(User).filter_by(id = user_id)).scalar_one()
+    races = user.races
     return render_template('user_races.html', user=user, races=races)
 
 
@@ -472,7 +506,8 @@ def show_user_races(user_id):
 @app.route('/race/<int:users_races_id>/trainings', methods=['GET', 'POST'])
 def add_training(users_races_id):
     """Render TrainingForm. Add training to users_races table in db."""
-    if not g.user:
+    u_r = db.session.execute(db.select(User_Race).filter_by(id = users_races_id)).scalar_one()
+    if not g.user.id == u_r.user_id:
         flash("Access unauthorized.", "danger")
         return redirect("/")
     

@@ -4,12 +4,22 @@
 
 <h1>{{user.first_name}} {{user.last_name}}</h1>
 <h2>Training for: {{race}}</h2>
-<p class="small flex"> <form action="/user/{{ user.id }}/delete" method="POST" class="button primary small"><input type="hidden" name="user_id" id="user_id_delete" value="{{ user.id }}">
+<p class="small flex">
+    {% if g.user.id == user.id %}
+            <!-- <a href="/user/profile" class="btn btn-outline-secondary">Edit Profile</a> -->
+            <form method="POST" action="/user/delete" class="form-inline">
+              <button class="btn btn-outline-danger ml-2">Delete Profile</button>
+            </form>
+            <form method="POST" action="/user/edit" class="form-inline">
+                <button class="btn btn-outline-danger ml-2">Edit Profile</button>
+              </form>
+    {% endif %}
+     <!-- <form action="/user/delete" method="POST" class="button primary small">
     <button type="submit" class="small inline">Delete</button>
     </form> 
     <form action="/user/{{user.id}}/edit" method="POST" class="button edit small"><input type="hidden" name="user_id" id="user_id_edit" value="{{ user.id }}">
         <button type="submit" class="small inline">Edit</button>
-        </form>
+        </form> -->
 </p>
 
 <p><b>See all races on vision board: </b><a href="/user/{{ user.id }}/races">Races</a></p>

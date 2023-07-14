@@ -147,7 +147,7 @@ class Training(db.Model):
                     primary_key=True,
                     autoincrement=True)
     users_races_id = db.Column(db.Integer,
-                        db.ForeignKey('users_races.id'),
+                        db.ForeignKey('users_races.id', ondelete="cascade"),
                         nullable=False)
     title = db.Column(db.String(30),
                     nullable=False,

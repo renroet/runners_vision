@@ -20,6 +20,7 @@ class UserAddForm(FlaskForm):
 class UserEditForm(FlaskForm):
     """Form for editing users."""
     username = StringField('Username:', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[Length(min=8), InputRequired()])
     first_name = StringField('First Name:', validators=[DataRequired()])
     last_name = StringField('Last Name:', validators=[DataRequired()])
     email = StringField('Email:', validators=[InputRequired(), Email()])
@@ -44,6 +45,7 @@ class LoginForm(FlaskForm):
 
 class SearchRacesForm(FlaskForm):
     """Form for searching races in API/db"""
+    username = StringField('Username:', validators=[Optional(), Length(max=100)])
     name = StringField('Name:', validators=[Optional(), Length(max=100)])
     start_date = DateField('Date:', validators=[Optional()], description='YYYY-MM-DD')
     city = StringField('City:', validators=[Optional()])
