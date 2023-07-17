@@ -7,10 +7,18 @@
 <p>Go Back: <a href="/user/{{ user.id }}">Profile</a></p>
 <ul>
     {% for r in races %}
-        <li>{{ r.name }} <form action="/races/{{ user.id }}/{{ r.id }}/activate" method="POST">
-            <input type="hidden" name="users_races_id" id="users_races_id" value="{{ id }}">
-            <button type="submit">Activate</button>
-            </form>
+        <li>{{ r.name }}
+            {% if active == r.id %}
+            <form action="/races/{{ user.id }}/{{ r.id }}/inactivate" method="POST">
+                <input type="hidden" name="users_races_id" id="users_races_id" value="{{ id }}">
+                <button type="submit">Inactivate</button> 
+                </form>
+            {% elif activate != r.id %}
+            <form action="/races/{{ user.id }}/{{ r.id }}/activate" method="POST">
+                <input type="hidden" name="users_races_id" id="users_races_id" value="{{ id }}">
+                <button type="submit">Activate</button> 
+                </form>
+            {% endif %}
             <form action="/races/{{ user.id }}/{{ r.id }}/delete" method="POST">
                 <input type="hidden" name="users_races_id" id="users_races_id_delete" value="{{ id }}">
                 <button type="submit">Remove</button>

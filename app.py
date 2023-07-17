@@ -93,7 +93,7 @@ toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
 
-
+###################################################################################################
 
 @app.before_request
 def add_user_to_g():
@@ -184,54 +184,8 @@ def logout():
     flash('Logged out', 'success')
     return redirect('/login')
 
-@app.route('/user/delete', methods=['POST'])
-def delete_user():
-    """Deletes user and all subsequent users_races and trainings from db"""
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
-    
-    do_logout()
-
-    db.session.delete(g.user)
-    db.session.commit()
-
-    return redirect('/signup')
-
-@app.route('/user/edit', methods=['GET', 'POST'])
-def edit_user():
-    """Render edit user form and update user"""
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect(f"/user/{g.user.id}")
-
-    form = UserEditForm(obj=g.user)
-
-    if form.validate_on_submit():
-        user = User.authenticate(g.user.username,
-                                 form.password.data)
-        if user:
-        
-            g.user.username=form.username.data,
-            g.user.email=form.email.data,
-            g.user.header_image_url=form.header_image_url.data or User.header_image_url.defaularg,
-            g.user.profile_image_url=form.profile_image_url.data or User.profile_image_url. defaularg,
-            g.user.first_name=form.first_name.data,
-            g.user.last_name=form.last_name.data,
-            g.user.bio=form.bio.data,
-            g.user.is_public=form.is_public.data
-
-            db.session.commit()
-
-            flash(f'{g.user.username} updated', 'success')
-            return redirect(f'/user/{g.user.id}')
-        
-        flash('Invalid credentials', 'danger')
-        return redirect('/')
-
-    return render_template('edit_user.html', form=form)
-
-
+########################################################################################################
+# homepage and race search
 
 @app.route('/')
 def homepage():
@@ -257,6 +211,7 @@ def show_all_races():
  
    
     return render_template('show.html', data=data, races=races, race=race, name=name, date=date, address=address, link=link, description=description, html=html, user_id=user_id)
+
 
 @app.route('/races/search', methods = ['GET', 'POST'])
 def search_races():
@@ -338,107 +293,9 @@ def search_races():
        
     return render_template('search.html', form=form)
 
-@app.route('/user/<int:user_id>/races/add', methods=['GET', 'POST'])
-def add_race(user_id):
-    """add race to user in db""" 
-    if not g.user or user_id == 0:
-        flash("Must be logged in", "danger")
-        return redirect("/")
 
-
-    name = request.form["name"]
-    db_race = db.session.execute(db.select(Race).filter_by(name=name)).scalar()
-    for r in g.user.races:
-        if r.name == name:
-            return redirect('/races')
-    
-    if db_race:
-        g.user.races.append(db_race)
-
-        db.session.add(g.user)
-        db.session.commit()
-
-        return render_template('activate.html', name = name, user_id=user_id, race_id=db_race.id)
-
-    resp = requests.get('https://runsignup.com/rest/races', params={'format': 'json', 'name': name})
-
-#     for i in data['races']:
-# ...   if i['race']['race_id'] == 146508:
-# ...     print(i)
-
-    data = resp.json()
-    race = data['races'][0]['race']
-
-    name = race['name']
-    city = race['address']['city']
-    state = race['address']['state']
-    start_date = race['next_date']
-
-    race = Race(name=name, city=city, state=state, start_date=start_date)
-
-    db.session.add(race)
-    db.session.commit()
-
-    g.user.races.append(race)
-
-    db.session.add(g.user)
-    db.session.commit()
-
-    # u_race = db.session.execute(db.select(User_Race).filter_by(race_id=race.id)).scalar_one()
-
-
-    return render_template('activate.html', name = name, user_id=user_id, race_id=race.id)
-
-    # name = db.Column(db.String(80),
-    #                 nullable=False)
-    # info = db.Column(db.Text)
-    # image_url = db.Column(db.Text,
-    #                             nullable=False,
-    #                             default='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdX_uUSvKmz2ITnpw8W5VVJQzqEdOxUrlW1Q&usqp=CAU')
-    # start_date = db.Column(db.String,
-    #                         nullable=False)           
-
-    return redirect('/')
-# if form.validate_on_submit():
-#         user = User.authenticate(g.user.username,
-#                                  form.password.data)
-#         if user:
-#             g.user.username = form.username.data
-#             g.user.email = form.email.data
-#             g.user.image_url = form.image_url.data
-#             g.user.header_image_url = form.header_image_url.data
-#             g.user.bio = form.bio.data
-
-#             db.session.commit()
-#             flash(f'{g.user.username} updated', 'success')
-#             return redirect(f'/users/{g.user.id}')
-        
-#         flash('Invalid credentials', 'danger')
-#         return redirect('/')
-
-#     return render_template('/users/edit.html', form=form)
-
-@app.route('/races/<int:user_id>/<int:race_id>/activate', methods=['POST'])
-def set_active_status(user_id, race_id):
-    """sets the newly added race as either active or inactive"""
-    if not g.user.id == user_id:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
-    
-    races = g.user.races
-
-    for r in races:
-        r = db.session.execute(db.select(User_Race).filter_by(race_id=r.id, user_id = g.user.id)).scalar_one()
-
-        r.deactivate()
-
-    u_race = db.session.execute(db.select(User_Race).filter_by(race_id=race_id, user_id=user_id)).scalar_one()
-    # race = db.session.execute(db.select(Race).filter_by(id=u_race.race_id)).scalar_one()
-    u_race.is_active = True 
-
-    db.session.commit()
-    
-    return redirect(f'/user/{user_id}')
+###################################################################################################
+# user
 
 @app.route('/user/<int:user_id>')
 def user_profile(user_id):
@@ -489,7 +346,59 @@ def user_profile(user_id):
                 total_walk_m = total_walk_m + d
 
     return render_template('profile.html', user=user, race=race, trainings=trainings, u_r=u_r, total_r=round(total_run_m,1), total_b=round(total_bike_m,1), total_w=round(total_walk_m,1))
+
+
+@app.route('/user/delete', methods=['POST'])
+def delete_user():
+    """Deletes user and all subsequent users_races and trainings from db"""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
     
+    do_logout()
+
+    db.session.delete(g.user)
+    db.session.commit()
+
+    return redirect('/signup')
+
+
+@app.route('/user/edit', methods=['GET', 'POST'])
+def edit_user():
+    """Render edit user form and update user"""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect(f"/user/{g.user.id}")
+
+    form = UserEditForm(obj=g.user)
+
+    if form.validate_on_submit():
+        user = User.authenticate(g.user.username,
+                                 form.password.data)
+        if user:
+        
+            g.user.username=form.username.data,
+            g.user.email=form.email.data,
+            g.user.header_image_url=form.header_image_url.data or User.header_image_url.defaularg,
+            g.user.profile_image_url=form.profile_image_url.data or User.profile_image_url. defaularg,
+            g.user.first_name=form.first_name.data,
+            g.user.last_name=form.last_name.data,
+            g.user.bio=form.bio.data,
+            g.user.is_public=form.is_public.data
+
+            db.session.commit()
+
+            flash(f'{g.user.username} updated', 'success')
+            return redirect(f'/user/{g.user.id}')
+        
+        flash('Invalid credentials', 'danger')
+        return redirect('/')
+
+    return render_template('edit_user.html', form=form)
+
+
+######################################################################################################
+# user-races
 
 @app.route('/user/<int:user_id>/races')
 def show_user_races(user_id):
@@ -499,8 +408,110 @@ def show_user_races(user_id):
 
     user = db.session.execute(db.select(User).filter_by(id = user_id)).scalar_one()
     races = user.races
-    return render_template('user_races.html', user=user, races=races)
+    active = ''
+    active_r = db.session.execute(db.select(User_Race).filter_by(user_id= user_id, is_active=True)).scalar()
+    if active_r:
+        active = active_r.race_id
 
+    return render_template('user_races.html', user=user, races=races, active=active)
+
+
+@app.route('/races/<int:user_id>/<race_id>/delete', methods=['POST'])
+def remove_users_race(user_id, race_id):
+    """Deletes race from users_races table and user profile along with linked trainings"""
+    # maybe make this an inhouse api call instead so their will not have to be any rerouting
+    if not g.user.id == user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    u_race = db.session.execute(db.select(User_Race).filter_by(race_id=race_id, user_id=user_id)).scalar_one()
+
+    db.session.delete(u_race)
+    db.session.commit()
+
+    return redirect(f'/user/{user_id}/races')
+
+
+@app.route('/user/<int:user_id>/races/add', methods=['GET', 'POST'])
+def add_race(user_id):
+    """add race to user in db""" 
+    if not g.user or user_id == 0:
+        flash("Must be logged in", "danger")
+        return redirect("/")
+
+
+    name = request.form["name"]
+    db_race = db.session.execute(db.select(Race).filter_by(name=name)).scalar()
+    for r in g.user.races:
+        if r.name == name:
+            return redirect('/races')
+    
+    if db_race:
+        g.user.races.append(db_race)
+
+        db.session.add(g.user)
+        db.session.commit()
+
+        return render_template('activate.html', name = name, user_id=user_id, race_id=db_race.id)
+
+    resp = requests.get('https://runsignup.com/rest/races', params={'format': 'json', 'name': name})
+
+    data = resp.json()
+    race = data['races'][0]['race']
+
+    name = race['name']
+    city = race['address']['city']
+    state = race['address']['state']
+    start_date = race['next_date']
+
+    race = Race(name=name, city=city, state=state, start_date=start_date)
+
+    db.session.add(race)
+    db.session.commit()
+
+    g.user.races.append(race)
+
+    db.session.add(g.user)
+    db.session.commit()
+
+
+    return render_template('activate.html', name = name, user_id=user_id, race_id=race.id)
+     
+
+@app.route('/races/<int:user_id>/<int:race_id>/activate', methods=['POST'])
+def set_active_status(user_id, race_id):
+    """sets the newly added race as either active or inactive"""
+    if not g.user.id == user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    
+    races = g.user.races
+
+    for r in races:
+        r = db.session.execute(db.select(User_Race).filter_by(race_id=r.id, user_id = g.user.id)).scalar_one()
+
+        r.deactivate()
+
+    u_race = db.session.execute(db.select(User_Race).filter_by(race_id=race_id, user_id=user_id)).scalar_one()
+    u_race.is_active = True 
+    db.session.commit()
+    
+    return redirect(f'/user/{user_id}')
+
+
+@app.route('/races/<int:user_id>/<int:race_id>/inactivate', methods=['POST'])
+def inactivate_race(user_id, race_id):
+    """Sets race in user profile to inactive. Removes all trainings from main profile page along with race"""
+
+    if not g.user.id == user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    
+    r = db.session.execute(db.select(User_Race).filter_by(race_id=race_id, user_id = g.user.id)).scalar_one()
+
+    r.deactivate()
+
+    return redirect(f'/user/{user_id}/races')
 
 
 @app.route('/race/<int:users_races_id>/trainings', methods=['GET', 'POST'])
@@ -531,17 +542,3 @@ def add_training(users_races_id):
     return render_template('add_training.html', form=form)
 
 
-@app.route('/races/<int:user_id>/<race_id>/delete', methods=['POST'])
-def remove_users_race(user_id, race_id):
-    """Deletes race from users_races table and user profile along with linked trainings"""
-    # maybe make this an inhouse api call instead so their will not have to be any rerouting
-    if not g.user.id == user_id:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
-
-    u_race = db.session.execute(db.select(User_Race).filter_by(race_id=race_id, user_id=user_id)).scalar_one()
-
-    db.session.delete(u_race)
-    db.session.commit()
-
-    return redirect(f'/user/{user_id}/races')
