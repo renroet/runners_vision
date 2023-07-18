@@ -1,9 +1,33 @@
 {% extends 'base.html' %}
 {% block title %} {{user.first_name}} {{user.last_name}} Profile {% endblock %}
 {% block content %}
-<div class="container ml-2">
+<div class="container ml-2 mr-0 mb-10">
 <h1>{{user.first_name}} {{user.last_name}}</h1>
-<h2>Training for: {{race}}</h2>
+<div id="header-pic" class="full-width relative" style="height: 300px">
+    <img class="w-100" src="{{ user.header_image_url }}" alt="Header image for {{ user.username }}" height="100%"></div>
+  <img src="{{ user.profile_image_url }}" alt="Image for {{ user.username }}" id="profile-avatar" class="profile-pic">
+  <div class="about row border border-grey border-top-0" style="width: 200px;">
+    <p class="mt-1"><b class="lg">About:</b> {{ user.info }} </p>
+    </div>
+
+  
+  <!-- <div class="row full-width">
+    <div class="container">
+      <div class="row justify-content-end">
+        <div class="col-9">
+          <ul class="user-stats nav nav-pills">
+            <li class="stat">
+              <p class="small">Races</p>
+              <h4>
+                <a href="/user/{{ user.id }}">{{ user.races | length }}</a>
+              </h4>
+            </li>
+</ul>
+</div>
+</div>
+</div> -->
+
+
 <p class="d-flex flex-sm-row">
     {% if g.user.id == user.id %}
             <!-- <a href="/user/profile" class="btn btn-outline-secondary">Edit Profile</a> -->
@@ -19,9 +43,10 @@
 
 <p><b>See all races on vision board: </b><a href="/user/{{ user.id }}/races">Races</a></p>
 
-
-<a href="/race/{{ u_r.id }}/trainings" class="button primary">Add Training</a>
 {% if race %}
+<h2>Training for: {{race}}</h2>
+<a href="/race/{{ u_r.id }}/trainings" class="button primary">Add Training</a>
+
 <h3>Total Distances:</h4>
 <h4>Run:{{ total_r }} miles   Bike:{{ total_b }} miles   Walk:{{ total_w }} miles </h4>
 
@@ -40,5 +65,6 @@
                      {% endif %}  
     {% endfor %}
 </ul>
+
 </div>
 {% endblock %}

@@ -31,8 +31,20 @@
 }
 
 .add-sm {
-    background-color: rgba(241, 151, 49, 0.964);
-    border-radius: .8rem;
+    font-size: 15px;
+    background-color: rgba(244, 138, 17, 0.964);
+    border-radius: .6rem;
+    margin-top: 5px;
+    align-items: center;
+    justify-items: center;
+}
+
+
+.add-sm:hover {
+    color: white;
+    background-color: rgba(244, 138, 17, 0.964);
+    background-image: none;
+    border-color: rgba(244, 138, 17, 0.964);
 }
 
 .lg-font {
@@ -47,3 +59,46 @@
     margin-top: 7px;
 }
 
+.rp-0 {
+    padding-inline-start: 0px;
+}
+
+
+.rp-15 {
+    padding-inline-start: 15px;
+}
+
+
+.btn-outline-or {
+        color: rgba(233, 140, 34, 0.964);
+        background-color: transparent;
+        background-image: none;
+        border-color: rgba(233, 140, 34, 0.964);
+}
+
+.btn-outline-or:hover {
+    color: white;
+    background-color: rgba(244, 138, 17, 0.964);
+    background-image: none;
+    border-color: rgba(244, 138, 17, 0.964);
+}
+
+.profile-pic {
+    margin-top: 5px;
+    position: relative;
+    top: 0px;
+    height: 200px;
+}
+
+.relative {
+    position: relative
+}
+
+.about {
+    position: relative;
+    left: 15px
+}
+
+.mb-10 {
+    margin-bottom: 10rem;
+}
