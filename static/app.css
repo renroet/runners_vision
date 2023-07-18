@@ -1,0 +1,49 @@
+.nav-link:hover {
+    color:aliceblue
+}
+
+.nav-link {
+    color: rgb(55, 173, 216)
+}
+
+.py-10 {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.success {
+    color:rgb(80, 157, 80);
+    background-color:rgb(214, 208, 200)
+}
+
+.danger {
+    color:rgb(183, 77, 77);
+    background-color:rgb(214, 208, 200)
+}
+
+.pt-0 {
+    padding-top: 0px;
+}
+
+.py-0 {
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+
+.add-sm {
+    background-color: rgba(241, 151, 49, 0.964);
+    border-radius: .8rem;
+}
+
+.lg-font {
+    font-size: 30px;
+}
+
+.rd-3 {
+    border-radius: .3rem
+}
+
+.r_name {
+    margin-top: 7px;
+}
+

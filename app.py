@@ -198,7 +198,7 @@ def show_all_races():
     
     user_id = g.user.id if g.user else 0
 
-    resp = requests.get('https://runsignup.com/rest/races', params={'format': 'json'})
+    resp = requests.get('https://runsignup.com/rest/races', params={'format': 'json', 'sort': 'end_date ASC', 'event_type': 'running_race'})
     data = resp.json()
     races = data['races']
     html = ['<', '>', '</', 'span>', 'b>', 'p>', 'a>', 'href', 'ul>']
@@ -206,11 +206,13 @@ def show_all_races():
     name = 'name'
     date = 'next_date'
     address = 'address'
+    city = 'city'
+    state = 'state'
     link = 'url'
     description = 'description'
  
    
-    return render_template('show.html', data=data, races=races, race=race, name=name, date=date, address=address, link=link, description=description, html=html, user_id=user_id)
+    return render_template('show.html', data=data, races=races, race=race, name=name, date=date, address=address, city=city, state=state, link=link, description=description, html=html, user_id=user_id)
 
 
 @app.route('/races/search', methods = ['GET', 'POST'])
@@ -218,13 +220,15 @@ def search_races():
     """Renders form and calls api with form info"""
     
     form = SearchRacesForm()
-    search = {'format': 'json'}
+    search = {'format': 'json', 'sort': 'date ASC', 'event_type': 'running_race'}
     u_r = []
     races = []
     race = 'race'
     
     date = 'next_date'
     address = 'address'
+    city = 'city'
+    state = 'state'
     link = 'url'
     
     description = 'description'
@@ -239,7 +243,10 @@ def search_races():
                         if u[0].is_public:
                             ra = {'race': { 
                                     'name': r.name,
-                                    'address': f'{r.city}, {r.state}',
+                                    'address': {
+                                        'city': r.city,
+                                        'state': r.state
+                                    },
                                     'next_date': r.start_date,
                                     'url': f'/user/{u[0].id}',
                                     'url_name': u[0].username}}
@@ -264,16 +271,16 @@ def search_races():
         if distance_units:
             search.update({'distance_units': distance_units})
      
-        if len(search) == 2 and not u_r:
+        if len(search) == 4 and not u_r:
             resp = requests.get('https://runsignup.com/rest/races', params=search)
     
             data = resp.json()
             races = data['races']
         
-        elif len(search) == 2 and u_r: 
+        elif len(search) == 4 and u_r: 
             for r in u_r:
                 races.append(r)
-        elif len(search) > 2:
+        elif len(search) > 4:
             resp = requests.get('https://runsignup.com/rest/races', params=search)
     
             data = resp.json()
@@ -288,7 +295,7 @@ def search_races():
         # html = ['<', '>', '</', 'span>', 'b>', 'p>', 'a>', 'href', 'ul>']
         
         
-        return render_template('show.html', races=races, race=race,  date=date, address=address, link=link, description=description, user_id=user_id)
+        return render_template('show.html', races=races, race=race,  date=date, address=address, city=city, state=state, link=link, description=description, user_id=user_id)
 
        
     return render_template('search.html', form=form)

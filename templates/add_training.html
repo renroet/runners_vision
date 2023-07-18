@@ -1,31 +1,34 @@
 {% extends 'base.html' %}
-
+{% block title %} Add Training {% endblock %}
 {% block content %}
 
-
-<div class="row col-md-4 center-block">
-    <form class="form-horizontal" id="training-form" method="POST">
-      {{ form.hidden_tag() }} 
-    
-      {% for field in form 
-              if field.widget.input_type != 'hidden' %}
-    
-        <p>
-          {{ field.label }}
-          {{ field }}
-    
-          {% for error in field.errors %}
-            {{ error }}
-
-              {% endfor %}
+<div class="container ml-2">
+  <h2>Add Training</h2>
+    <div class="row col-md-4 center-block">
+        <form class="form-horizontal" id="training-form" method="POST">
+          {{ form.hidden_tag() }} 
+        
+          {% for field in form 
+                  if field.widget.input_type != 'hidden' %}
           
-        </p>
-    
-      {% endfor %}
-    
-      <button type="submit">Submit</button>
-    </form>
+                  <div class="form-group row">
+                    {{ field.label(class_="col-sm-3 col-form-label") }}
+                    <div class="col-sm-9">
+                    {{ field(class_="form-control") }}
+                    
+                    {% for error in field.errors %}
+                      {{ error }}
+                    
+                        {% endfor %}
+                    </div>
+                    </div>
+                  
+                  
+          {% endfor %}
+                  
+          <button class="btn-outline-primary rd-3" type="submit">Submit</button>
+        </form>
+    </div>
 </div>
-
 
 {% endblock %}

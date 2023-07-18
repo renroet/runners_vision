@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
-
+{% block title %} Edit Profile {% endblock %}
 {% block content %}
-
+<div class="container ml-2">
 <h1>Edit Profile</h1>
 
 <div class="row col-md-4 center-block">
@@ -11,39 +11,43 @@
       {% for field in form 
               if field.widget.input_type != 'hidden' and field.name != 'password' %}
     
-        <p>
-          {{ field.label }}
-          {{ field }}
+
+        <div class="form-group row">
+          {{ field.label(class_="col-sm-3 col-form-label") }}
+          <div class="col-sm-9">
+          {{ field(class_="form-control") }}
     
           {% for error in field.errors %}
             {{ error }}
 
               {% endfor %}
-          
-        </p>
+          </div>
+          </div>
     
         {% endfor %}
 
         Enter password to confirm changes:
         {% for field in form 
             if field.widget.input_type != 'hidden' and field.name == 'password' %}
-      <p>
-        {{ field.label }}
-        {{ field }}
-  
-        {% for error in field.errors %}
-          {{ error }}
-
-            {% endfor %}
-        
-      </p>
-  
-      {% endfor %}
+           
+        <div class="form-group row">
+          {{ field.label(class_="col-sm-3 col-form-label") }}
+          <div class="col-sm-9">
+          {{ field(class_="form-control") }}
     
-      <button type="submit">Submit</button>
+          {% for error in field.errors %}
+            {{ error }}
+
+              {% endfor %}
+          </div>
+          </div>
+    
+        {% endfor %}
+    
+      <button class="btn-outline-primary rd-3" type="submit">Submit</button>
     </form>
 </div>
-
+</div>
 
 
 

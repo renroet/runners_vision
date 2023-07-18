@@ -4,43 +4,30 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/app.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.3/lumen/bootstrap.css">
-    <title>Document</title>
+    <title>{% block title %} {% endblock %}</title>
 </head>
 <body>
 <header>
     <div>
-        <nav class="navbar navbar-expand">
-            <div class="container-fluid">
-              <!-- <div class="navbar-header">
-                <a href="/races" class="navbar-brand">
-                  <img src="/static/images/warbler-logo.png" alt="logo">
-                  <span>Warbler</span>
-                </a>
-              </div> -->
+        <nav class="navbar navbar-expand-lg bg-dark">
+          <div class="container-fluid navbar-left">
+            <ul class="nav navbar-nav navbar-right">
+              <li class="navbar-item"><a class="nav-link" href="/races">Runner's Vision</a></li>
+          </ul>
+          </div>
+            <div class="container-fluid navbar-right">
+             
               <ul class="nav navbar-nav navbar-right">
-                <li><a href="/races">Home</a></li>
-                <!-- {% if request.endpoint != None %}
-                <li>
-                  <form class="navbar-form navbar-right" action="/users">
-                    <input name="q" class="form-control" placeholder="Search Warbler" id="search">
-                    <button class="btn btn-default">
-                      <span class="fa fa-search"></span>
-                    </button>
-                  </form>
-                </li>
-                {% endif %} -->
+                
                 {% if not g.user %}
-                <li><a href="/signup">Sign up</a></li>
-                <li><a href="/login">Log in</a></li>
+                <li class="navbar-item"><a class="nav-link" href="/signup">Sign up</a></li>
+                <li class="navbar-item"><a class="nav-link" href="/login">Log in</a></li>
                 {% else %}
-                <!-- <li>
-                  <a href="/user/{{ g.user.id }}">
-                    <img src="{{ g.user.profile_image_url }}" alt="{{ g.user.username }}">
-                  </a>
-                </li> -->
-                <li><a href="/user/{{ g.user.id }}">{{ g.user.username }}</a></li>
-                <li><a href="/logout">Log out</a></li>
+               
+                <li class="navbar-item"><a class="nav-link" href="/user/{{ g.user.id }}">{{ g.user.username }}</a></li>
+                <li class="navbar-item"><a class="nav-link" href="/logout">Log out</a></li>
                 {% endif %}
               </ul>
             </div>
@@ -53,7 +40,6 @@
         {% endfor %}
     {% endif %}
     {% endwith %}</header>
-    <h1>Hello</h1>
 
     {% block content %}
     {% endblock %}

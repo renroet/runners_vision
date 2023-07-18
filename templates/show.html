@@ -1,23 +1,31 @@
 {% extends 'base.html' %}
-
+{% block title %} Races {% endblock %}
 {% block content %}
-<nav>
-    <a href="/races/search" class="button"> Search for Races
-    </a>
-</nav>
+<div class="container py-10">
+    <div class="row">
+        <nav>
+            <a href="/races/search" class="button xl"> Search for Races
+            </a>
+        </nav>
+        </div>
+</div>
 
 <ol>
     {% for i in races %}
-    
-    <li>   
-        <h3>{{ i['race']['name'] }} </h3>
-        <form action="/user/{{ user_id }}/races/add" method="POST">
-            <input type="hidden" name="name" id="name" value="{{ i['race']['name'] }}">
-            <button type="submit">Add</button>
-        </form>
+    <div class="container mb-3">
+
+        <li class="pt-0">    
+        <div class="d-flex flex-row r_name">
+            <p class="p-2 inline ml-0 lg-font"> <h4>{{ i['race']['name'] }}</h4> </p>
+            <form action="/user/{{ user_id }}/races/add" method="POST" class="pl-2 d-inline-flex">
+                <input  type="hidden" name="name" id="name" value="{{ i['race']['name'] }}">
+                <button class="add-sm" style="height:25px; padding-top: 0px; padding-bottom: 0px;" type="submit">Add</button>
+            </form>
+        
+        </div>
             <ul>
                 <li>{{ i['race'][date] }}</li>
-                <li>{{ i['race'][address] }}</li>
+                <li>{{ i['race'][address]['city'] }}, {{ i['race'][address]['state'] }}</li>
                 <!-- need to slice on <> and make new paragraphs there -->
                 <li><a href="{{ i['race'][link] }}">
                     {% if not i['race'].get('url_name') %}
@@ -27,8 +35,9 @@
                     {% endif %}
                     </a></li>
             </ul>
-        
+        </div>
     </li>
+
     {% endfor %}
 </ol>
 {% endblock %}

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% block title %} {user.first_name}}'s Races {% endblock %}
 {% block content %}
 
 <h1>{{user.first_name}} {{user.last_name}}</h1>
@@ -7,22 +7,25 @@
 <p>Go Back: <a href="/user/{{ user.id }}">Profile</a></p>
 <ul>
     {% for r in races %}
-        <li>{{ r.name }}
-            {% if active == r.id %}
-            <form action="/races/{{ user.id }}/{{ r.id }}/inactivate" method="POST">
+        <li>{{ r.name }} - {{r.start_date}}
+            <p class="d-flex flex-sm-row">
+                {% if active == r.id %}
+            <form class="d-inline-flex p-2 form-inline" action="/races/{{ user.id }}/{{ r.id }}/inactivate" method="POST">
                 <input type="hidden" name="users_races_id" id="users_races_id" value="{{ id }}">
-                <button type="submit">Inactivate</button> 
+                <button class="btn-outline-primary" type="submit">Inactivate</button> 
                 </form>
             {% elif activate != r.id %}
-            <form action="/races/{{ user.id }}/{{ r.id }}/activate" method="POST">
+            <form class="d-inline-flex p-2 form-inline" action="/races/{{ user.id }}/{{ r.id }}/activate" method="POST">
                 <input type="hidden" name="users_races_id" id="users_races_id" value="{{ id }}">
-                <button type="submit">Activate</button> 
+                <button class="btn-outline-primary" type="submit">Activate</button> 
                 </form>
             {% endif %}
-            <form action="/races/{{ user.id }}/{{ r.id }}/delete" method="POST">
+            <form class="d-inline-flex p-2 form-inline" action="/races/{{ user.id }}/{{ r.id }}/delete" method="POST">
                 <input type="hidden" name="users_races_id" id="users_races_id_delete" value="{{ id }}">
-                <button type="submit">Remove</button>
+                <button class="btn-outline-danger" type="submit">Remove</button>
                 </form>
+                
+            </p>
         </li>
     {% endfor %}
 </ul>
