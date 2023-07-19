@@ -279,6 +279,8 @@ def user_profile(user_id):
                 if t.units == 'km':
                     d = t.distance/1.609
                 total_walk_m = total_walk_m + d
+    
+    
 
     return render_template('profile.html', user=user, race=race, trainings=trainings, u_r=u_r, total_r=round(total_run_m,1), total_b=round(total_bike_m,1), total_w=round(total_walk_m,1))
 
@@ -314,8 +316,16 @@ def edit_user():
         
             g.user.username=form.username.data,
             g.user.email=form.email.data,
-            g.user.header_image_url=form.header_image_url.data or User.header_image_url.defaularg,
-            g.user.profile_image_url=form.profile_image_url.data or User.profile_image_url. defaularg,
+            if form.header_image_url.data:
+                g.user.header_image_url=form.header_image_url.data,
+            else:
+                g.user.header_image_url=User.header_image_url.defaularg,
+            # g.user.header_image_url=form.header_image_url.data or User.header_image_url.defaularg,
+            if form.profile_image_url.data:
+                g.user.profile_image_url=form.profile_image_url.data,
+            else:
+                g.user.profile_image_url=User.profile_image_url.defaularg,
+            # g.user.profile_image_url=form.profile_image_url.data or User.profile_image_url. defaularg,
             g.user.first_name=form.first_name.data,
             g.user.last_name=form.last_name.data,
             g.user.bio=form.bio.data,

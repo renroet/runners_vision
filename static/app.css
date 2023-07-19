@@ -36,7 +36,6 @@
     border-radius: .6rem;
     margin-top: 5px;
     align-items: center;
-    justify-items: center;
 }
 
 
@@ -88,6 +87,7 @@
     position: relative;
     top: 0px;
     height: 200px;
+    width: 200px
 }
 
 .relative {

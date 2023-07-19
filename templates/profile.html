@@ -5,10 +5,12 @@
 <h1>{{user.first_name}} {{user.last_name}}</h1>
 <div id="header-pic" class="full-width relative" style="height: 300px">
     <img class="w-100" src="{{ user.header_image_url }}" alt="Header image for {{ user.username }}" height="100%"></div>
-  <img src="{{ user.profile_image_url }}" alt="Image for {{ user.username }}" id="profile-avatar" class="profile-pic">
-  <div class="about row border border-grey border-top-0" style="width: 200px;">
-    <p class="mt-1"><b class="lg">About:</b> {{ user.info }} </p>
-    </div>
+  <div class="container ml-0 border border-grey" style="width: 200px;">
+    <img src="{{ user.profile_image_url }}" alt="Image for {{ user.username }}" id="profile-avatar" class="w-100">
+    <!-- <div class="about row border border-grey border-top-0" style="width: 200px;"> -->
+    <p class="mt-1"><b class="lg">About:</b> {{ user.bio }} </p>
+    <!-- </div> -->
+</div>
 
   
   <!-- <div class="row full-width">
@@ -31,10 +33,10 @@
 <p class="d-flex flex-sm-row">
     {% if g.user.id == user.id %}
             <!-- <a href="/user/profile" class="btn btn-outline-secondary">Edit Profile</a> -->
-            <form class="d-inline-flex p-2" method="POST" action="/user/delete" class="form-inline">
+            <form class="d-inline-flex pl-0" method="POST" action="/user/delete" class="form-inline">
               <button class="btn-sm btn-outline-danger rd-3 ml-2">Delete Profile</button>
             </form>
-            <form class="d-inline-flex p-2" method="POST" action="/user/edit" class="form-inline">
+            <form class="d-inline-flex pl-0" method="POST" action="/user/edit" class="form-inline">
                 <button class="btn-sm btn-outline-primary rd-3 ml-2">Edit Profile</button>
               </form>
     {% endif %}
