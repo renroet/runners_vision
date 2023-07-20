@@ -101,7 +101,7 @@ def login():
             do_login(user)
             flash(f"Hello, {user.username}!", "success")
             return redirect("/")
-
+        
         flash("Invalid credentials.", 'danger')
 
     return render_template('login.html', form=form)
@@ -242,8 +242,12 @@ def user_profile(user_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-
     user = db.session.execute(db.select(User).filter_by(id = user_id)).scalar_one()
+    if not g.user.id == user_id and user.is_public == False:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    
     race = ''
     u_r = db.session.execute(db.select(User_Race).filter_by(is_active=True, user_id = user.id)).scalar()
     if u_r:
@@ -350,8 +354,12 @@ def show_user_races(user_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-
     user = db.session.execute(db.select(User).filter_by(id = user_id)).scalar_one()
+    if g.user.id != user_id and user.is_public == False:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+   
     races = user.races
     active = ''
     active_r = db.session.execute(db.select(User_Race).filter_by(user_id= user_id, is_active=True)).scalar()
