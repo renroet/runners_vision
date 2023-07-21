@@ -173,6 +173,7 @@ class UserViewTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn('value="testuser2"', html)
 
+
     def test_no_edit_unauthorized_user(self):
         """Does app restrict access to edit features if user is not profile owner"""
         with self.client as c:
@@ -187,4 +188,5 @@ class UserViewTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertNotIn('action="/user/edit"', html)
 
-                    
+
+            

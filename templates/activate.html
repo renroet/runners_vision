@@ -8,9 +8,9 @@
 <p class="d-flex flex-sm-row">
     <form class="d-inline-flex p-2 form-inline" action="/races/{{ user_id }}/{{ race_id }}/activate" method="POST">
         <input type="hidden" name="users_races_id" id="users_races_id" value="{{ id }}">
-        <button class="btn-outline-or rd-3" type="submit">Activate</button>
+        <button class="btn-outline-primary rd-3" type="submit">Activate</button>
     </form>
-    <a href="/races" class="d-inline-flex p-2 form-inline"><button class="btn-outline-primary rd-3">Leave Inactive</button></a>
+    <a href="/races" class="d-inline-flex p-2 form-inline"><button class="btn-outline-or rd-3">Leave Inactive</button></a>
 </p>
 <p class="danger">Warning: only one race can be active at a time. If new race is activated, all training restarts for the activated race.</p>
 {% endblock %}

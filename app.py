@@ -392,6 +392,11 @@ def add_race(user_id):
         flash("Must be logged in", "danger")
         return redirect("/")
 
+    if g.user:
+        if not g.user.id == user_id:
+            flash('Access unauthorized.', 'danger')
+            return redirect('/')
+
 
     name = request.form["name"]
     db_race = db.session.execute(db.select(Race).filter_by(name=name)).scalar()
