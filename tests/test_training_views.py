@@ -1,39 +1,23 @@
 """Training view tests."""
 
-# run these tests like:
-#
-#    python -m unittest tests/test_race_views.py
-
-
 import os
 from unittest import TestCase
 
 from models import db, User, Race, User_Race, Training
 
-# BEFORE we import our app, let's set an environmental variable
-# to use a different database for tests (we need to do this
-# before we import our app, since that will have already
-# connected to the database
-
 os.environ['DATABASE_URL'] = "postgresql:///runners_vision-test"
-
-
-# Now we can import app
 
 from app import app
 from app import app, CURR_USER_KEY
 app.config['TESTING'] = True
 app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
-# Create our tables (we do this here, so we only create the tables
-# once for all tests --- in each test, we'll delete the data
-# and create fresh new clean test data
 
 db.create_all()
 
 app.config['WTF_CSRF_ENABLED'] = False
 
 
-class RaceViewTestCase(TestCase):
+class TrainingViewTestCase(TestCase):
     """Test views for races/user's races."""
 
     def setUp(self):

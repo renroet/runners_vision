@@ -7,32 +7,16 @@
     <img class="w-100" src="{{ user.header_image_url }}" alt="Header image for {{ user.username }}" height="100%"></div>
   <div class="container ml-0 border border-grey" style="width: 200px;">
     <img src="{{ user.profile_image_url }}" alt="Image for {{ user.username }}" id="profile-avatar" class="w-100">
-    <!-- <div class="about row border border-grey border-top-0" style="width: 200px;"> -->
+    
     <p class="mt-1"><b class="lg">About:</b> {{ user.bio }} </p>
-    <!-- </div> -->
+   
 </div>
 
-  
-  <!-- <div class="row full-width">
-    <div class="container">
-      <div class="row justify-content-end">
-        <div class="col-9">
-          <ul class="user-stats nav nav-pills">
-            <li class="stat">
-              <p class="small">Races</p>
-              <h4>
-                <a href="/user/{{ user.id }}">{{ user.races | length }}</a>
-              </h4>
-            </li>
-</ul>
-</div>
-</div>
-</div> -->
 
 
 <p class="d-flex flex-sm-row">
     {% if g.user.id == user.id %}
-            <!-- <a href="/user/profile" class="btn btn-outline-secondary">Edit Profile</a> -->
+           
             <form class="d-inline-flex pl-0" method="POST" action="/user/delete" class="form-inline">
               <button class="btn-sm btn-outline-danger rd-3 ml-2">Delete Profile</button>
             </form>
