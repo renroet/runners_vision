@@ -32,18 +32,21 @@
 
 .add-sm {
     font-size: 15px;
-    background-color: rgba(244, 138, 17, 0.964);
-    border-radius: .6rem;
+    background-color: rgba(23, 238, 188, 0.964);
+    border-style: none;
+    border-radius: .4rem;
     margin-top: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
     align-items: center;
 }
 
 
 .add-sm:hover {
     color: white;
-    background-color: rgba(244, 138, 17, 0.964);
+    background-color: rgba(23, 238, 188, 0.964);
     background-image: none;
-    border-color: rgba(244, 138, 17, 0.964);
+    border-color: rgba(23, 238, 188, 0.964);
 }
 
 .lg-font {

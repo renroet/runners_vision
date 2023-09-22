@@ -10,7 +10,32 @@
 </head>
 <body>
 <header>
-    <div>
+  <div>
+    <nav class="navbar navbar-expand-lg bg-dark">
+        <div class="container-fluid d-flex justify-content-between align-items-center"> <!-- Use d-flex and justify-content-between here -->
+            <ul class="nav navbar-nav flex-row">
+                <li class="navbar-item"><a class="nav-link" href="/races">Runner's Vision</a></li>
+            </ul>
+            
+            <ul class="nav navbar-nav flex-row flex-lg-wrap">
+                {% if not g.user %}
+                <li class="navbar-item mr-3"><a class="nav-link" href="/signup">Sign up</a></li>
+                <li class="navbar-item"><a class="nav-link" href="/login">Log in</a></li>
+                {% else %}
+                <li class="navbar-item mr-3"><a class="nav-link" href="/user/{{ g.user.id }}">{{ g.user.username }}</a></li>
+                <li class="navbar-item"><a class="nav-link" href="/logout">Log out</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+</div>
+
+
+
+
+
+
+    <!-- <div>
         <nav class="navbar navbar-expand-lg bg-dark">
           <div class="container-fluid navbar-left">
             <ul class="nav navbar-nav navbar-right">
@@ -19,7 +44,7 @@
           </div>
             <div class="container-fluid navbar-right">
              
-              <ul class="nav navbar-nav navbar-right">
+              <ul class="nav navbar-nav navbar-right ml-auto">
                 
                 {% if not g.user %}
                 <li class="navbar-item"><a class="nav-link" href="/signup">Sign up</a></li>
@@ -32,7 +57,7 @@
               </ul>
             </div>
           </nav>
-    </div>
+    </div> -->
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         {% for category, message in messages %}
