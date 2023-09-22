@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %} {{user.first_name}} {{user.last_name}} Profile {% endblock %}
 {% block content %}
-<div class="container ml-2 mr-0 mb-10">
+<div class="container ml-0 mr-0 mb-10">
 <h1>{{user.first_name}} {{user.last_name}}</h1>
 <div id="header-pic" class="full-width relative" style="height: 300px">
     <img class="w-100" src="{{ user.header_image_url }}" alt="Header image for {{ user.username }}" height="100%"></div>
