@@ -4,7 +4,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 import requests 
 from json import JSONDecodeError
-
+from secret import SECRET_KEY
 from forms import UserAddForm, UserEditForm, TrainingForm, LoginForm, SearchRacesForm
 from models import db, connect_db, User, Training, Race, User_Race
 
@@ -18,7 +18,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///runners_vision'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
-app.config['SECRET_KEY'] = "it's a secret"
+app.config['SECRET_KEY'] = SECRET_KEY
 toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
@@ -322,12 +322,14 @@ def edit_user():
             if form.header_image_url.data:
                 g.user.header_image_url=form.header_image_url.data,
             else:
-                g.user.header_image_url=User.header_image_url.defaularg,
+                g.user.header_image_url=User.__table__.c.header_image_url.default.arg,
+                # g.user.header_image_url=User.header_image_url.defaularg,
             # g.user.header_image_url=form.header_image_url.data or User.header_image_url.defaularg,
             if form.profile_image_url.data:
                 g.user.profile_image_url=form.profile_image_url.data,
             else:
-                g.user.profile_image_url=User.profile_image_url.defaularg,
+                g.user.profile_image_url=User.__table__.c.profile_image_url.default.arg,
+                # g.user.profile_image_url=User.profile_image_url.defaularg,
             # g.user.profile_image_url=form.profile_image_url.data or User.profile_image_url. defaularg,
             g.user.first_name=form.first_name.data,
             g.user.last_name=form.last_name.data,
@@ -498,4 +500,32 @@ def add_training(users_races_id):
 
     return render_template('add_training.html', form=form)
 
+@app.route('/trainings/<int:id>/edit', methods=['GET', 'POST'])
+def edit_training(id):
+    """Render populated training form and allow to edit"""
+    t = db.session.execute(db.select(Training).filter_by(id = id)).scalar_one()
+    form = TrainingForm(obj=t)
 
+    if form.validate_on_submit():
+        t.title = form.title.data
+        t.body = form.body.data
+        t.time_spent = form.time_spent.data
+        t.type = form.type.data
+        t.distance = form.distance.data
+        t.units = form.units.data
+
+        db.session.commit()
+
+        flash(f'{t.title} updated', "success")
+        return redirect(f'/user/{g.user.id}')
+
+    return render_template('add_training.html', form=form)
+
+@app.route('/trainings/<int:id>/delete', methods=['POST'])
+def del_training(id):
+    """Delete training from database"""
+    t = db.session.execute(db.select(Training).filter_by(id = id)).scalar_one()
+    db.session.delete(t)
+    db.session.commit()
+
+    return redirect(f'/user/{g.user.id}')

@@ -38,6 +38,7 @@ class TrainingForm(FlaskForm):
     distance = FloatField('Distance:', validators=[Optional()])
     units = SelectField('Units:', choices=UNITS, default='miles')
 
+
 class LoginForm(FlaskForm):
     """Form for logging in a known user"""
     username = StringField('Username:', validators=[DataRequired()])

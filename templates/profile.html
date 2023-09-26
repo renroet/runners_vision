@@ -3,13 +3,13 @@
 {% block content %}
 <div class="container mt-2 ml-0 mr-0 mb-10">
 <h1>{{user.first_name}} {{user.last_name}}</h1>
-<div id="header-pic" class="full-width relative" style="height: 300px">
-    <img class="w-100" src="{{ user.header_image_url }}" alt="Header image for {{ user.username }}" height="100%"></div>
-  <div class="container ml-0 prof-pic" style="width: 200px; height: 200px;">
-    <img src="{{ user.profile_image_url }}" alt="Image for {{ user.username }}" id="profile-avatar" class="w-100 mt-3">
+<div id="header-pic" class="full-width relative" style="height: 300px; border-radius: .2rem;">
+    <img class="w-100" src="{{ user.header_image_url }}" alt="Header image for {{ user.username }}" height="100%" style="border-radius: .2rem;"></div>
+  <div class="container ml-0 prof-pic" style="width: 200px; height: 190px; ">
+    <img src="{{ user.profile_image_url }}" alt="Image for {{ user.username }}" id="profile-avatar" class="w-100 mt-2" style="border-radius: .2rem; bottom: 10px;">
 </div>
   
-<div class="container relative border-top border-primary" style="top: -200px">
+<div class="container relative" style="top: -190px;"">
     <div class="row">
         <div class="col-md-6 d-flex flex-row py-1"> <!-- Buttons column on the left (adjust column size as needed) -->
             {% if g.user.id == user.id %}
@@ -30,9 +30,9 @@
     
 
     
-<div class="row">
+<div class="row" style="background-color: rgba(0,0,0,.060); border-radius: .2rem;">
     <div class="col-md-5">
-<div class="about mt-1"> 
+<div class="about mt-3"> 
     <p class="my-1 mx-2"><b class="lg">About:</b> {{ user.bio }} </p>
 </div> 
 
@@ -44,7 +44,7 @@
 
 {% if race %}
 <!-- <h2>Training for: {{race}}</h2> -->
-<div class="card " style="width: 18rem; ">
+<div class="card mb-3" style="width: 18rem; ">
     <div class="card-body">
         <a href="/race/{{ u_r.id }}/trainings" class="card-subtitle mb-4 text-primary button primary">Add Training</a>
         <!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> -->
@@ -70,20 +70,32 @@
 {% endif %}
 </div>
 <div class="col-md-7 ">
-<div class="trainings mt-1"> 
+<div class="trainings mt-3 mb-3"> 
 <ul class="list-group">
     {% for t in trainings %}
-    <div class="card">
-        <div class="card-body">
+    <div class="card mb-2">
+        <div class="card-body py-1 px-3">
           <h5 class="card-title">{{ t.title }}</h5>
           {% if t.distance %} 
           <h6 class="card-subtitle mb-2 text-muted">{{t.created_at.date()}} - {{t.distance}} {{ t.units }}</h6>
           {% else %}
           <h6 class="card-subtitle mb-2 text-muted">{{t.created_at.date()}}</h6>
           {% endif %} 
-          <p class="card-text">{{t.body}}</p>
-          <a href="/{{ t.id }}/delete" class="card-link" style="color: red;">Delete</a>
-          <a href="/{{ t.id }}/edit" class="card-link primary">Edit</a>
+          <p class="card-text mb-1">{{t.body}}</p>
+          {% if g.user.id == user.id %}
+          <div class="d-flex flex-row">
+            <form method="POST" action="/trainings/{{ t.id }}/delete" class="form-inline">
+                <button class="btn-md btn-link rd-3 py-0" style="border-style:none; color: red;">Delete</button>
+            </form>
+            <form method="POST" action="/trainings/{{ t.id }}/edit" class="form-inline">
+                <button class="btn-md btn-link rd-3 ml-1 py-0" style="border-style:none;">Edit</button>
+            </form>
+            
+        </div>
+
+          <!-- <a href="/trainings/{{ t.id }}/delete" class="card-link" style="color: red;">Delete</a>
+          <a href="/trainings/{{ t.id }}/edit" class="card-link primary">Edit</a> -->
+          {% endif %} 
         </div>
       </div>
 
