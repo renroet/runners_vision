@@ -5,7 +5,10 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 import requests 
 from json import JSONDecodeError
-from secret import SECRET_KEY
+try:
+    from secret import SECRET_KEY
+except:
+    SECRET_KEY = os.environ.get('SECRET_KEY')
 from forms import UserAddForm, UserEditForm, TrainingForm, LoginForm, SearchRacesForm
 from models import db, connect_db, User, Training, Race, User_Race
 # os.getenv()
