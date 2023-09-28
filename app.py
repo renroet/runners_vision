@@ -4,6 +4,10 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 import requests 
 from json import JSONDecodeError
+try:
+    from secret import SECRET_KEY
+except ImportError:
+    SECRET_KEY;
 from secret import SECRET_KEY
 from forms import UserAddForm, UserEditForm, TrainingForm, LoginForm, SearchRacesForm
 from models import db, connect_db, User, Training, Race, User_Race
@@ -18,7 +22,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///runners_vision'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+
 app.config['SECRET_KEY'] = SECRET_KEY
+
 toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
