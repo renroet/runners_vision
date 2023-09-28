@@ -1,23 +1,22 @@
-
+import os
+os.getenv()
 from flask import Flask, render_template, request, jsonify, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 import requests 
 from json import JSONDecodeError
-try:
-    from secret import SECRET_KEY
-except ImportError:
-    SECRET_KEY;
 from secret import SECRET_KEY
 from forms import UserAddForm, UserEditForm, TrainingForm, LoginForm, SearchRacesForm
 from models import db, connect_db, User, Training, Race, User_Race
+# os.getenv()
 
 CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
 app.app_context().push()
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///runners_vision'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///runners_vision'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
