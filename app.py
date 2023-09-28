@@ -1,5 +1,5 @@
 import os
-os.getenv()
+
 from flask import Flask, render_template, request, jsonify, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
